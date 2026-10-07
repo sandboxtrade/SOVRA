@@ -5,9 +5,18 @@ import { advanceTime } from '../game/simulation/engine'
 import { loadGame, saveGame } from '../game/state/persistence'
 import type { CountryState } from '../game/state/types'
 import GameCanvas from '../game/world/GameCanvas'
+import { ApprovalIcon, CabinetIcon, CountryIcon, InflationIcon, NewsIcon, PeopleIcon, PoliticsIcon, RegionsIcon, TreasuryIcon } from '../ui/Icons'
 import { conditionText } from '../ui/format'
 import { CabinetPanel, CountryPanel, NewsPanel, type Panel, RegionsPanel } from './Panels'
 import PoliticsPanel from './PoliticsPanel'
+
+const navItems = [
+  { id: 'country', label: 'Страна', Icon: CountryIcon },
+  { id: 'cabinet', label: 'Кабинет', Icon: CabinetIcon },
+  { id: 'politics', label: 'Власть', Icon: PoliticsIcon },
+  { id: 'regions', label: 'Районы', Icon: RegionsIcon },
+  { id: 'news', label: 'Новости', Icon: NewsIcon },
+] as const
 
 export default function App() {
   const [country, setCountry] = useState<CountryState>(() => loadGame())
@@ -38,6 +47,7 @@ export default function App() {
   }, [country.hour])
 
   const nationalMood = conditionText(country.prosperity, 'стагнация', 'стабилизация', 'рост')
+  const crisis = country.politics.stability < 35 || country.approval < 35
   const togglePanel = (next: Exclude<Panel, null>) => setPanel((current) => current === next ? null : next)
 
   const applyAction = (action: GameActionRequest) => setCountry((state) => {
@@ -57,26 +67,38 @@ export default function App() {
   return (
     <main className="app-shell">
       <GameCanvas state={country} />
+      <div className="world-vignette" aria-hidden="true" />
 
-      <header className="topbar glass">
-        <div><div className="eyebrow">SOVRA · v0.4.1</div><div className="country-name">Республика Северная</div></div>
-        <div className="clock-block"><strong>День {country.day}</strong><span>{timeText}</span></div>
+      <header className="command-header glass-panel">
+        <div className="state-mark" aria-hidden="true"><span>S</span></div>
+        <div className="state-title">
+          <div className="eyebrow">SOVRA · v0.5.0</div>
+          <div className="country-name">Республика Северная</div>
+        </div>
+        <div className="date-card">
+          <span>День {country.day}</span>
+          <strong>{timeText}</strong>
+        </div>
       </header>
 
-      <section className="status-strip glass" aria-label="Состояние страны">
-        <span><b>{Math.round(country.treasury)}</b> млрд</span>
-        <span>занятость <b>{Math.round(country.employment)}%</b></span>
-        <span>инфляция <b>{country.economy.inflation.toFixed(1)}%</b></span>
-        <span>поддержка <b>{Math.round(country.approval)}%</b></span>
-        <span className="status-word">{nationalMood}</span>
+      <section className="hud-metrics" aria-label="Состояние страны">
+        <HudMetric Icon={TreasuryIcon} label="Казна" value={`${Math.round(country.treasury)} млрд`} />
+        <HudMetric Icon={PeopleIcon} label="Занятость" value={`${Math.round(country.employment)}%`} />
+        <HudMetric Icon={InflationIcon} label="Инфляция" value={`${country.economy.inflation.toFixed(1)}%`} tone={country.economy.inflation > 8 ? 'warning' : undefined} />
+        <HudMetric Icon={ApprovalIcon} label="Поддержка" value={`${Math.round(country.approval)}%`} tone={country.approval < 35 ? 'danger' : country.approval > 60 ? 'good' : undefined} />
       </section>
 
-      <div className="map-hint glass">Перетаскивай карту · щипок — масштаб</div>
+      <div className={`situation-pill glass-panel ${crisis ? 'danger' : ''}`}>
+        <i />
+        <span>{crisis ? 'напряжённая обстановка' : nationalMood}</span>
+      </div>
 
-      <div className="speed glass" aria-label="Скорость времени">
-        <button className={country.speed === 0 ? 'active' : ''} onClick={() => setSpeed(0)} aria-label="Пауза">Ⅱ</button>
-        <button className={country.speed === 1 ? 'active' : ''} onClick={() => setSpeed(1)}>×1</button>
-        <button className={country.speed === 4 ? 'active' : ''} onClick={() => setSpeed(4)}>×4</button>
+      <div className="map-hint glass-panel">перетаскивай · щипок — масштаб</div>
+
+      <div className="speed-control glass-panel" aria-label="Скорость времени">
+        <button className={country.speed === 0 ? 'active' : ''} onClick={() => setSpeed(0)} aria-label="Пауза"><span>Ⅱ</span></button>
+        <button className={country.speed === 1 ? 'active' : ''} onClick={() => setSpeed(1)} aria-label="Обычная скорость"><span>1×</span></button>
+        <button className={country.speed === 4 ? 'active' : ''} onClick={() => setSpeed(4)} aria-label="Ускорить"><span>4×</span></button>
       </div>
 
       {panel === 'country' && <CountryPanel country={country} onClose={() => setPanel(null)} />}
@@ -85,13 +107,23 @@ export default function App() {
       {panel === 'regions' && <RegionsPanel country={country} onClose={() => setPanel(null)} />}
       {panel === 'news' && <NewsPanel country={country} onClose={() => setPanel(null)} />}
 
-      <nav className="bottom-nav glass" aria-label="Основное меню">
-        <button className={panel === 'country' ? 'selected' : ''} onClick={() => togglePanel('country')}><span>◈</span>Страна</button>
-        <button className={panel === 'cabinet' ? 'selected' : ''} onClick={() => togglePanel('cabinet')}><span>▣</span>Кабинет</button>
-        <button className={panel === 'politics' ? 'selected' : ''} onClick={() => togglePanel('politics')}><span>♜</span>Власть</button>
-        <button className={panel === 'regions' ? 'selected' : ''} onClick={() => togglePanel('regions')}><span>⌁</span>Районы</button>
-        <button className={panel === 'news' ? 'selected' : ''} onClick={() => togglePanel('news')}><span>▤</span>Новости</button>
+      <nav className="bottom-dock glass-panel" aria-label="Основное меню">
+        {navItems.map(({ id, label, Icon }) => (
+          <button key={id} className={panel === id ? 'selected' : ''} onClick={() => togglePanel(id)}>
+            <span className="nav-icon"><Icon /></span>
+            <small>{label}</small>
+          </button>
+        ))}
       </nav>
     </main>
+  )
+}
+
+function HudMetric({ Icon, label, value, tone }: { Icon: typeof TreasuryIcon; label: string; value: string; tone?: 'warning' | 'danger' | 'good' }) {
+  return (
+    <div className={`hud-metric glass-panel ${tone ?? ''}`}>
+      <span className="hud-metric-icon"><Icon /></span>
+      <span className="hud-metric-copy"><small>{label}</small><b>{value}</b></span>
+    </div>
   )
 }

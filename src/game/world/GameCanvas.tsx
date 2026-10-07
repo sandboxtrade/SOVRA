@@ -17,45 +17,47 @@ export default function GameCanvas({ state }: { state: CountryState }) {
     if (!mount) return
 
     const world = createWorld()
-    const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' })
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance', alpha: false })
     renderer.shadowMap.enabled = true
-    renderer.shadowMap.type = THREE.PCFShadowMap
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap
     renderer.outputColorSpace = THREE.SRGBColorSpace
+    renderer.toneMapping = THREE.ACESFilmicToneMapping
+    renderer.toneMappingExposure = 1.08
     renderer.domElement.className = 'world-canvas'
     mount.appendChild(renderer.domElement)
 
     const camera = new THREE.OrthographicCamera(-20, 20, 20, -20, 0.1, 220)
-    camera.position.set(34, 38, 34)
-    camera.lookAt(0, 0, 0)
+    camera.position.set(34, 36, 34)
+    camera.lookAt(0, 0.8, 0)
 
     const controls = new OrbitControls(camera, renderer.domElement)
     controls.enableDamping = true
-    controls.dampingFactor = 0.085
+    controls.dampingFactor = 0.08
     controls.enablePan = true
     controls.enableRotate = true
-    controls.minZoom = 0.7
-    controls.maxZoom = 2.8
+    controls.minZoom = 0.82
+    controls.maxZoom = 3.45
     controls.zoomSpeed = 0.82
-    controls.rotateSpeed = 0.42
-    controls.panSpeed = 0.72
-    controls.minPolarAngle = Math.PI * 0.23
-    controls.maxPolarAngle = Math.PI * 0.43
-    controls.target.set(0, 1.2, 0)
+    controls.rotateSpeed = 0.34
+    controls.panSpeed = 0.68
+    controls.minPolarAngle = Math.PI * 0.24
+    controls.maxPolarAngle = Math.PI * 0.405
+    controls.target.set(0, 1.0, 0)
+    controls.maxDistance = 120
 
     const resize = () => {
       const width = Math.max(1, mount.clientWidth)
       const height = Math.max(1, mount.clientHeight)
       const aspect = width / height
-      const size = 20
+      const size = width < 500 ? 18.4 : 20.5
       camera.left = -size * aspect
       camera.right = size * aspect
       camera.top = size
       camera.bottom = -size
       camera.updateProjectionMatrix()
 
-      // Deliberately render below native resolution: the result is sharper pixel-3D and much cheaper on mobile GPUs.
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.35)
-      renderer.setPixelRatio(dpr * 0.72)
+      // v0.5 favors cleaner silhouettes. DPR is capped to protect mobile GPUs without deliberately blurring the scene.
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, width < 700 ? 1.42 : 1.65))
       renderer.setSize(width, height, false)
     }
 

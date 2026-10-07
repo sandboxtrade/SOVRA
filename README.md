@@ -1,50 +1,51 @@
-# SOVRA v0.4.1
+# SOVRA v0.5.0
 
-Mobile-first political/economic sandbox with a living miniature 3D country. The visual layer is lightweight 3D with procedural pixel textures; simulation, politics, AI commands and rendering are separate systems.
+Mobile-first political/economic sandbox with a living miniature 3D country. Simulation, AI control and presentation remain separate systems so new mechanics can be added without rebuilding the project around them.
 
-## v0.4.1
+## v0.5.0 — visual overhaul
 
-Audit/fix release over v0.4.0:
+This release intentionally prioritizes presentation over new mechanics.
 
-- Fixed the free local command parser so years before a command, negation and relative phrases such as “lower by 5%” cannot silently become the wrong absolute action.
-- Save/AI usage writes no longer crash the game when browser storage is unavailable or full.
-- Save hydration now deep-merges sectors, districts, blocs and ministers, making future schema additions safer.
-- AI client validates Worker responses and aborts a stuck request after 60 seconds.
-- AI cost estimation is model-aware and deliberately conservative for unknown models.
-- Flex → Standard retry is now opt-in, not automatic, so the Worker does not silently double token pricing.
-- Worker rejects mismatched browser origins when `ALLOWED_ORIGIN` is configured and sends `no-store` responses.
-- Worker TypeScript is included in the root project type-check.
+- Rebuilt vehicles with correct forward orientation, wheels, glazing, bumpers and lights. Cars, buses and trucks now have distinct silhouettes.
+- Rebuilt pedestrians as small articulated rigs with torso, head, hair, arms and legs. Walking now has an actual gait animation instead of sliding blocks.
+- Rebuilt panel housing with plinths, facade seams, varied window-light groups, balconies, entrances, canopies and rooftop equipment.
+- Reworked government, offices, private houses and the industrial plant with stronger silhouettes and secondary detail.
+- Added shops, warehouses, a park, benches, bus stops, crosswalks, gutters, curbs and denser street furniture.
+- Added restrained in-world district labels so the country reads faster at phone scale.
+- Improved daylight/twilight/night treatment, softer shadows, tone mapping, fog and render resolution.
+- New command-center HUD with a proper identity header, icon-based state metrics, situation indicator, vertical time controls and a cleaner bottom dock.
+- Panel styling was split from global HUD styling instead of allowing one huge CSS file to keep growing.
+- World models are now split into `models/actors`, `models/buildings`, `models/environment` and `models/infrastructure`; this is enough separation for maintenance without creating hundreds of tiny files.
+- Save storage now uses a stable `sovra-game` key and migrates prior v0.4/v0.3/v0.2 saves. Future visual releases no longer need a new save key.
+- GitHub Pages workflow uses `npm install --no-audit --no-fund`, so it does not require a committed `package-lock.json`.
 
-- Political simulation: stability, legitimacy, corruption and parliament support.
-- Four parliamentary blocs with different interests; loyalty changes from the actual state of the country and the political course.
-- Government ministers with competence, loyalty and ambition.
-- Five political policy axes: media freedom, executive power, regional autonomy, police powers and anti-corruption pressure.
-- Political deterioration can now appear directly in the 3D country as a protest crowd near the government building.
-- Save schema v4 with migration from v0.3/v0.2/STATE saves.
-- AI command layer rebuilt for very low API spend.
-- One compact `execute_game_action` function tool now fronts all exposed game actions instead of adding a large tool schema for every feature.
-- Literal numeric commands are parsed locally for $0.00; GPT is called only when the command is not obvious.
-- Default model: `gpt-6-luna`, reasoning disabled, low verbosity, capped output.
-- Default API processing tier: `flex` for lower token cost; Standard fallback is opt-in and disabled by default.
-- Compact state snapshot instead of sending the whole save/world to the model.
-- In-game approximate API usage meter and configurable local budget guard (default $3).
-- No automatic GPT calls yet: time simulation, economy and ordinary news cost nothing.
+## Existing systems retained
+
+- Economy: salaries, consumption, business, taxation, budget flows, inflation, employment and sectors.
+- Politics: stability, legitimacy, corruption, parliament, blocs, ministers and political policy axes.
+- Living visual state: traffic, pedestrians, lighting, pollution, neglect, construction and protests react to simulation state.
+- AI actions: one compact action gateway shared by local commands and the OpenAI Worker.
+- Low-cost AI path: literal commands stay local for $0.00; GPT is only used for ambiguous free-form commands.
+- Default local API guard remains $3 and automatic GPT calls are still disabled.
 
 ## Project layout
 
 ```text
-src/app/                 React shell and panels
-src/game/state/          state schema, defaults, save migration
-src/game/simulation/     economy, politics, districts, projects, news, time
-src/game/actions/        single validated mutation gateway
-src/game/ai/             compact snapshot, free local parser, API client, usage meter
-src/game/world/          Three.js country, lightweight models, living visual layer
-src/ui/                  presentation helpers
-shared/                  browser/Worker action contracts
-worker/src/              OpenAI proxy split into routing, prompts, costs and API call
+src/app/                      React shell and game panels
+src/game/state/               state schema, defaults, stable persistence/migrations
+src/game/simulation/          economy, politics, districts, projects, news, time
+src/game/actions/             validated mutation gateway
+src/game/ai/                  compact state, free local parser, API client, usage meter
+src/game/world/createWorld.ts world composition and state-driven visual behavior
+src/game/world/models/        actors, buildings, environment, infrastructure
+src/game/world/labels.ts      lightweight in-world labels
+src/game/world/visual.ts      shared procedural materials/geometry helpers
+src/ui/                       icons, formatters and panel styling
+shared/                       browser/Worker action contracts
+worker/src/                   OpenAI proxy, prompts, cost control and routing
 ```
 
-The folders are intentionally coarse. New mechanics should normally add one focused simulation module and, only if controllable, one action in the shared action contract. Do not create one file per tiny function.
+The structure is deliberately medium-grained. Add a focused module when a system has its own responsibility; do not create a file for every helper.
 
 ## Run
 
@@ -72,4 +73,4 @@ Optional repository variables:
 
 ## AI
 
-The browser never gets `OPENAI_API_KEY`. Deploy `worker/` separately to Cloudflare and store the key with Wrangler secret storage. See `worker/README.md` and `docs/AI_COST_CONTROL.md`.
+The browser never receives `OPENAI_API_KEY`. Deploy `worker/` separately to Cloudflare and keep the key in Worker secret storage. See `worker/README.md` and `docs/AI_COST_CONTROL.md`.

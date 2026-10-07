@@ -1,4 +1,4 @@
-const CACHE = 'sovra-v0.4.1-runtime'
+const CACHE = 'sovra-v0.5.0-runtime'
 
 self.addEventListener('install', () => self.skipWaiting())
 self.addEventListener('activate', (event) => {

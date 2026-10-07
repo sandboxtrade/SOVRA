@@ -1,8 +1,8 @@
 import { INITIAL_COUNTRY } from './initialState'
 import type { CountryState } from './types'
 
-const SAVE_KEY = 'sovra-game-v0.4.1'
-const PREVIOUS_KEYS = ['sovra-game-v0.4.0', 'sovra-game-v0.3.0', 'sovra-game-v0.2.0', 'state-game-v0.1.0']
+const SAVE_KEY = 'sovra-game'
+const PREVIOUS_KEYS = ['sovra-game-v0.4.1', 'sovra-game-v0.4.0', 'sovra-game-v0.3.0', 'sovra-game-v0.2.0', 'state-game-v0.1.0']
 
 export function loadGame(): CountryState {
   try {

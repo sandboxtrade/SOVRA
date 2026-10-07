@@ -14,7 +14,7 @@ The browser never receives the OpenAI API key. GitHub Pages calls this Worker; t
 - no conversation history sent on command calls
 - no automatic requests from the simulation
 
-Flex is cheaper but can be slower or temporarily unavailable. To protect a tiny balance, v0.4.1 does **not** retry Standard by default. Set `OPENAI_ALLOW_STANDARD_FALLBACK=true` only if availability matters more than minimum cost.
+Flex is cheaper but can be slower or temporarily unavailable. To protect a tiny balance, v0.5.0 does **not** retry Standard by default. Set `OPENAI_ALLOW_STANDARD_FALLBACK=true` only if availability matters more than minimum cost.
 
 ## First deployment
 

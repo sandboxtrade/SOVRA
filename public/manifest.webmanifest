@@ -3,8 +3,8 @@
   "short_name": "SOVRA",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#101216",
-  "theme_color": "#101216",
+  "background_color": "#0b0f12",
+  "theme_color": "#0b0f12",
   "orientation": "portrait-primary",
   "icons": [
     { "src": "./icon-180.png", "sizes": "180x180", "type": "image/png" },
