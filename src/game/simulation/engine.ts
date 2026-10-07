@@ -17,7 +17,7 @@ function dailyUpdate(state: CountryState): CountryState {
 export function advanceTime(state: CountryState, deltaSeconds: number): CountryState {
   if (state.speed === 0 || deltaSeconds <= 0) return state
 
-  const hoursPerRealSecond = 0.42 * state.speed
+  const hoursPerRealSecond = 0.08 * state.speed
   let hour = state.hour + deltaSeconds * hoursPerRealSecond
   let day = state.day
   let next = state

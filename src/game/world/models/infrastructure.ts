@@ -113,16 +113,16 @@ export function addBusStop(scene: THREE.Scene, x: number, z: number, rotation = 
 
 export function addRail(scene: THREE.Scene, z: number) {
   const railMat = material(0x343a3b, 0.42, 0.2)
-  const bed = box(43, 0.065, 1.15, texturedMaterial('#4b4942', '#696357', 1440, 5, 2))
+  const bed = box(56, 0.065, 1.15, texturedMaterial('#4b4942', '#696357', 1440, 6, 2))
   bed.position.set(0, -0.03, z)
   scene.add(bed)
   for (const offset of [-0.28, 0.28]) {
-    const rail = box(43, 0.075, 0.055, railMat)
+    const rail = box(56, 0.075, 0.055, railMat)
     rail.position.set(0, 0.06, z + offset)
     scene.add(rail)
   }
   const sleeperMat = material(0x51483e)
-  for (let x = -21; x <= 21; x += 0.72) {
+  for (let x = -27; x <= 27; x += 0.72) {
     const sleeper = box(0.09, 0.04, 0.91, sleeperMat)
     sleeper.position.set(x, 0.024, z)
     scene.add(sleeper)

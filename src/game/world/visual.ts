@@ -10,6 +10,16 @@ export function seeded(seed: number) {
   }
 }
 
+function shiftHex(hex: string, amount: number) {
+  const clean = hex.replace('#', '')
+  const value = Number.parseInt(clean.length === 3 ? clean.split('').map((c) => c + c).join('') : clean, 16)
+  const shift = (channel: number) => Math.max(0, Math.min(255, channel + amount))
+  const r = shift((value >> 16) & 255)
+  const g = shift((value >> 8) & 255)
+  const b = shift(value & 255)
+  return `rgb(${r}, ${g}, ${b})`
+}
+
 export function pixelTexture(base: string, accent: string, seed = 1, size = 32) {
   const canvas = document.createElement('canvas')
   canvas.width = size
@@ -20,21 +30,49 @@ export function pixelTexture(base: string, accent: string, seed = 1, size = 32) 
   ctx.fillRect(0, 0, size, size)
   const rand = seeded(seed)
 
-  for (let i = 0; i < 58; i += 1) {
+  const darker = shiftHex(base, -18)
+  const lighter = shiftHex(base, 18)
+  const accentSoft = shiftHex(accent, 12)
+
+  for (let y = 0; y < size; y += 1) {
+    for (let x = 0; x < size; x += 1) {
+      const n = rand()
+      if (n < 0.14) {
+        ctx.fillStyle = darker
+        ctx.fillRect(x, y, 1, 1)
+      } else if (n > 0.89) {
+        ctx.fillStyle = lighter
+        ctx.fillRect(x, y, 1, 1)
+      }
+    }
+  }
+
+  for (let i = 0; i < 80; i += 1) {
     const x = Math.floor(rand() * size)
     const y = Math.floor(rand() * size)
-    const w = 1 + Math.floor(rand() * 4)
-    const h = 1 + Math.floor(rand() * 3)
-    ctx.globalAlpha = 0.07 + rand() * 0.19
-    ctx.fillStyle = accent
+    const w = 1 + Math.floor(rand() * 5)
+    const h = 1 + Math.floor(rand() * 4)
+    ctx.globalAlpha = 0.06 + rand() * 0.18
+    ctx.fillStyle = rand() > 0.5 ? accent : accentSoft
     ctx.fillRect(x, y, w, h)
   }
 
-  // A faint grid gives large flat surfaces a deliberate miniature-model look.
-  ctx.globalAlpha = 0.075
+  for (let i = 0; i < 7; i += 1) {
+    ctx.globalAlpha = 0.055 + rand() * 0.05
+    ctx.fillStyle = rand() > 0.5 ? darker : lighter
+    const bandY = Math.floor(rand() * size)
+    ctx.fillRect(0, bandY, size, 1 + Math.floor(rand() * 2))
+  }
+
+  ctx.globalAlpha = 0.08
   ctx.fillStyle = accent
   for (let x = 0; x < size; x += 8) ctx.fillRect(x, 0, 1, size)
   for (let y = 0; y < size; y += 8) ctx.fillRect(0, y, size, 1)
+
+  ctx.globalAlpha = 0.05
+  ctx.fillStyle = lighter
+  for (let i = -size; i < size * 2; i += 6) ctx.fillRect(i, 0, 1, size)
+
   ctx.globalAlpha = 1
 
   const texture = new THREE.CanvasTexture(canvas)

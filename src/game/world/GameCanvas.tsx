@@ -27,7 +27,7 @@ export default function GameCanvas({ state }: { state: CountryState }) {
     mount.appendChild(renderer.domElement)
 
     const camera = new THREE.OrthographicCamera(-20, 20, 20, -20, 0.1, 220)
-    camera.position.set(34, 36, 34)
+    camera.position.set(42, 42, 40)
     camera.lookAt(0, 0.8, 0)
 
     const controls = new OrbitControls(camera, renderer.domElement)
@@ -35,21 +35,21 @@ export default function GameCanvas({ state }: { state: CountryState }) {
     controls.dampingFactor = 0.08
     controls.enablePan = true
     controls.enableRotate = true
-    controls.minZoom = 0.82
-    controls.maxZoom = 3.45
+    controls.minZoom = 0.64
+    controls.maxZoom = 3.9
     controls.zoomSpeed = 0.82
     controls.rotateSpeed = 0.34
-    controls.panSpeed = 0.68
+    controls.panSpeed = 0.76
     controls.minPolarAngle = Math.PI * 0.24
     controls.maxPolarAngle = Math.PI * 0.405
     controls.target.set(0, 1.0, 0)
-    controls.maxDistance = 120
+    controls.maxDistance = 160
 
     const resize = () => {
       const width = Math.max(1, mount.clientWidth)
       const height = Math.max(1, mount.clientHeight)
       const aspect = width / height
-      const size = width < 500 ? 18.4 : 20.5
+      const size = width < 500 ? 22.4 : 24.8
       camera.left = -size * aspect
       camera.right = size * aspect
       camera.top = size

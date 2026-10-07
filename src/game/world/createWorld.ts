@@ -37,7 +37,7 @@ export type WorldHandle = {
 export function createWorld(): WorldHandle {
   const scene = new THREE.Scene()
   scene.background = new THREE.Color(0x12171b)
-  scene.fog = new THREE.FogExp2(0x12171b, 0.0105)
+  scene.fog = new THREE.FogExp2(0x12171b, 0.0089)
 
   const windows: THREE.MeshStandardMaterial[] = []
   const roadMaterials: THREE.MeshStandardMaterial[] = []
@@ -53,66 +53,70 @@ export function createWorld(): WorldHandle {
 
   const { waterMat } = addGround(scene)
 
-  // Main road grid: broad enough to read from a phone, detailed enough to stop looking like grey strips.
-  addRoad(scene, 0, 0, 43, 2.15, roadMaterials)
-  addRoad(scene, -8.4, 1.5, 2.05, 30, roadMaterials)
-  addRoad(scene, 8.6, -1.0, 2.05, 31, roadMaterials)
-  addRoad(scene, 0, 10.0, 25, 1.75, roadMaterials)
-  addRoad(scene, 2.5, -9.6, 29, 1.85, roadMaterials)
-  addRoad(scene, -16.0, -6.0, 1.55, 12, roadMaterials)
+  // Main road grid: broader and more legible so the country feels less cramped.
+  addRoad(scene, 0, 0, 56, 2.2, roadMaterials)
+  addRoad(scene, -10.2, 1.5, 2.05, 36, roadMaterials)
+  addRoad(scene, 10.4, -1.0, 2.05, 38, roadMaterials)
+  addRoad(scene, 0, 12.6, 31, 1.8, roadMaterials)
+  addRoad(scene, 4.0, -12.0, 34, 1.9, roadMaterials)
+  addRoad(scene, -19.5, -7.5, 1.6, 16, roadMaterials)
+  addRoad(scene, 20.5, 6.8, 1.6, 14, roadMaterials)
 
-  addSidewalk(scene, 0, 1.55, 42, 0.58)
-  addSidewalk(scene, 0, -1.55, 42, 0.58)
-  addSidewalk(scene, -10.0, 2.0, 0.55, 27)
-  addSidewalk(scene, -6.8, 2.0, 0.55, 27)
-  addCrosswalk(scene, -8.4, 0, Math.PI / 2)
-  addCrosswalk(scene, 8.6, 0, Math.PI / 2)
-  addCrosswalk(scene, 0, 9.95, 0)
-  addBusStop(scene, -2.8, 1.95)
-  addBusStop(scene, 12.7, -1.95, Math.PI)
-  addRail(scene, -14.2)
+  addSidewalk(scene, 0, 1.58, 54, 0.58)
+  addSidewalk(scene, 0, -1.58, 54, 0.58)
+  addSidewalk(scene, -11.8, 2.0, 0.55, 33)
+  addSidewalk(scene, -8.6, 2.0, 0.55, 33)
+  addCrosswalk(scene, -10.2, 0, Math.PI / 2)
+  addCrosswalk(scene, 10.4, 0, Math.PI / 2)
+  addCrosswalk(scene, 0, 12.55, 0)
+  addBusStop(scene, -3.2, 1.98)
+  addBusStop(scene, 15.8, -1.98, Math.PI)
+  addRail(scene, -18.4)
 
   // Capital / residential fabric.
   const blocks = [
-    [-14.2, -4.8, 8, 0], [-14.0, 4.8, 10, 0], [-5.2, -5.0, 12, 0], [-5.0, 5.0, 9, 0],
-    [4.9, -5.0, 11, 0], [4.8, 5.0, 13, 0], [14.1, -5.0, 8, 0], [14.0, 5.0, 10, 0],
-    [-5.1, 13.5, 7, Math.PI / 2], [4.8, 13.4, 8, Math.PI / 2],
+    [-19.2, -5.0, 8, 0], [-19.0, 5.0, 10, 0], [-10.2, -5.2, 12, 0], [-10.0, 5.0, 9, 0],
+    [-1.0, -5.1, 11, 0], [-1.0, 5.0, 13, 0], [8.5, -5.0, 10, 0], [8.5, 5.0, 11, 0],
+    [18.5, -5.1, 8, 0], [18.3, 5.2, 10, 0], [-4.8, 16.2, 7, Math.PI / 2], [5.2, 16.1, 8, Math.PI / 2],
+    [14.8, 13.8, 7, Math.PI / 2], [-15.2, 13.8, 6, Math.PI / 2],
   ] as const
   blocks.forEach(([x, z, floors, rot], i) => addPanelBlock(scene, x, z, floors, 50 + i, windows, buildingMaterials, rot))
 
-  addGovernment(scene, 0.2, 5.1, windows)
-  addPark(scene, 15.8, 11.8, treeMaterials)
-  addShop(scene, -1.8, -2.65, 1)
-  addShop(scene, 2.0, -2.62, 2)
-  addShop(scene, 11.9, 2.55, 3, Math.PI)
-  addShop(scene, -12.0, 2.52, 4, Math.PI)
+  addGovernment(scene, 0.4, 6.6, windows)
+  addPark(scene, 21.5, 14.6, treeMaterials)
+  addPark(scene, -23.5, 14.0, treeMaterials)
+  addShop(scene, -5.0, -2.65, 1)
+  addShop(scene, -1.1, -2.62, 2)
+  addShop(scene, 12.9, 2.55, 3, Math.PI)
+  addShop(scene, -13.6, 2.52, 4, Math.PI)
+  addShop(scene, 4.0, -2.62, 5)
 
   // Industrial belt.
-  addFactory(scene, 13.3, -11.2, smoke, buildingMaterials)
-  const yard = box(12.5, 0.08, 5.7, texturedMaterial('#4c504c', '#666861', 777, 5, 3))
-  yard.position.set(13.0, -0.02, -11.4)
+  addFactory(scene, 18.3, -14.2, smoke, buildingMaterials)
+  const yard = box(15.5, 0.08, 6.2, texturedMaterial('#4c504c', '#666861', 777, 6, 3))
+  yard.position.set(18.1, -0.02, -14.5)
   scene.add(yard)
-  for (let i = 0; i < 4; i += 1) addWarehouse(scene, 8.9 + i * 2.7, -16.0, i)
+  for (let i = 0; i < 5; i += 1) addWarehouse(scene, 12.0 + i * 2.8, -20.2, i)
 
   // Private / rural west.
-  for (let i = 0; i < 18; i += 1) {
-    const x = -21 + (i % 5) * 2.45
-    const z = -11.8 + Math.floor(i / 5) * 2.05
+  for (let i = 0; i < 28; i += 1) {
+    const x = -27 + (i % 7) * 2.35
+    const z = -15.8 + Math.floor(i / 7) * 2.15
     addHouse(scene, x, z, i, 0.82 + (i % 3) * 0.08)
   }
-  addField(scene, -17.7, 13.4, 7.0, 5.1, 1)
-  addField(scene, -18.2, 7.3, 6.0, 4.0, 2)
-  addField(scene, 16.8, 12.8, 7.0, 4.2, 3)
+  addField(scene, -23.7, 16.6, 9.0, 5.4, 1)
+  addField(scene, -24.4, 9.4, 8.0, 4.4, 2)
+  addField(scene, 24.0, 15.2, 8.5, 4.5, 3)
 
   // Trees and green belts.
-  for (let i = 0; i < 82; i += 1) {
+  for (let i = 0; i < 118; i += 1) {
     const rand = seeded(300 + i)
-    const x = -23 + rand() * 46
-    const z = -17 + rand() * 34
-    const nearMainRoad = Math.abs(z) < 1.8 || Math.abs(x + 8.4) < 1.5 || Math.abs(x - 8.6) < 1.5
-    const industrial = x > 7 && z < -7
-    const ruralHouses = x < -9 && z < -4
-    const park = x > 12.5 && z > 8.7
+    const x = -30 + rand() * 60
+    const z = -21 + rand() * 42
+    const nearMainRoad = Math.abs(z) < 1.8 || Math.abs(x + 10.2) < 1.5 || Math.abs(x - 10.4) < 1.5
+    const industrial = x > 12 && z < -10
+    const ruralHouses = x < -14 && z < -6
+    const park = (x > 17 && z > 10) || (x < -20 && z > 10)
     if (!nearMainRoad && !industrial && !ruralHouses && !park) addTree(scene, x, z, 0.62 + rand() * 0.45, treeMaterials, i)
   }
 
@@ -125,39 +129,41 @@ export function createWorld(): WorldHandle {
     trash.push(item)
   }
 
-  for (let i = -18; i <= 18; i += 3) {
+  for (let i = -24; i <= 24; i += 3) {
     addStreetLamp(scene, i, -1.62, lampMaterials, 0)
     addStreetLamp(scene, i, 1.62, lampMaterials, Math.PI)
   }
-  for (let z = -10; z <= 10; z += 4) {
-    addStreetLamp(scene, -6.74, z, lampMaterials, Math.PI / 2)
-    addStreetLamp(scene, 6.94, z, lampMaterials, -Math.PI / 2)
+  for (let z = -14; z <= 14; z += 4) {
+    addStreetLamp(scene, -8.54, z, lampMaterials, Math.PI / 2)
+    addStreetLamp(scene, 8.74, z, lampMaterials, -Math.PI / 2)
   }
 
   // Future skyline grows from policy/economic state.
-  addOffice(scene, 1.8, 8.6, 8, 39, growthBuildings)
-  addOffice(scene, 5.4, 9.0, 11, 51, growthBuildings)
-  addOffice(scene, -2.2, 9.0, 9, 60, growthBuildings)
+  addOffice(scene, 2.4, 11.2, 8, 39, growthBuildings)
+  addOffice(scene, 6.4, 11.8, 11, 51, growthBuildings)
+  addOffice(scene, -2.4, 11.5, 9, 60, growthBuildings)
+  addOffice(scene, 12.5, 10.6, 8, 58, growthBuildings)
 
-  labels.push(createWorldLabel(scene, 'СТОЛИЦА', 0.2, 4.8, 6.3))
-  labels.push(createWorldLabel(scene, 'ПРОМЗОНА', 13.0, -11.5, 5.9))
-  labels.push(createWorldLabel(scene, 'СЕВЕРНЫЕ РАЙОНЫ', -14.2, 6.6, 5.4))
+  labels.push(createWorldLabel(scene, 'СТОЛИЦА', 0.2, 6.0, 6.6))
+  labels.push(createWorldLabel(scene, 'ПРОМЗОНА', 18.0, -14.6, 6.1))
+  labels.push(createWorldLabel(scene, 'СЕВЕРНЫЕ РАЙОНЫ', -18.4, 8.2, 5.7))
+  labels.push(createWorldLabel(scene, 'ЗАПАДНЫЕ ПОСЁЛКИ', -23.2, -10.8, 5.4))
 
   const construction = addConstructionSite(scene)
   const roadworks = addRoadworks(scene)
 
   const curveMain = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-20.5, 0.18, -0.55), new THREE.Vector3(-8.5, 0.18, -0.55),
-    new THREE.Vector3(8.6, 0.18, -0.55), new THREE.Vector3(20.5, 0.18, -0.55),
-    new THREE.Vector3(8.6, 0.18, 0.55), new THREE.Vector3(-8.5, 0.18, 0.55), new THREE.Vector3(-20.5, 0.18, 0.55),
+    new THREE.Vector3(-27.0, 0.18, -0.55), new THREE.Vector3(-10.3, 0.18, -0.55),
+    new THREE.Vector3(10.4, 0.18, -0.55), new THREE.Vector3(27.0, 0.18, -0.55),
+    new THREE.Vector3(10.4, 0.18, 0.55), new THREE.Vector3(-10.3, 0.18, 0.55), new THREE.Vector3(-27.0, 0.18, 0.55),
   ], true)
   const curveLoop = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-8.8, 0.18, -12.3), new THREE.Vector3(-8.8, 0.18, 9.6),
-    new THREE.Vector3(8.9, 0.18, 9.6), new THREE.Vector3(8.9, 0.18, -9.1), new THREE.Vector3(-8.8, 0.18, -9.1),
+    new THREE.Vector3(-10.5, 0.18, -15.2), new THREE.Vector3(-10.5, 0.18, 12.4),
+    new THREE.Vector3(10.7, 0.18, 12.4), new THREE.Vector3(10.7, 0.18, -11.3), new THREE.Vector3(-10.5, 0.18, -11.3),
   ], true)
 
   const carColors = [0x788789, 0x5c514b, 0x874743, 0x486073, 0x81755c, 0x3f5049, 0x716675, 0x8a8b86]
-  for (let i = 0; i < 30; i += 1) {
+  for (let i = 0; i < 42; i += 1) {
     const kind: VehicleKind = i % 11 === 0 ? 'bus' : i % 7 === 0 ? 'truck' : 'car'
     const mesh = vehicleMesh(kind === 'bus' ? 0x657d70 : kind === 'truck' ? 0x6c675f : carColors[i % carColors.length], kind)
     scene.add(mesh)
@@ -166,19 +172,19 @@ export function createWorld(): WorldHandle {
 
   const walkingLoops = [
     new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-15, 0.1, 2.0), new THREE.Vector3(-10, 0.1, 2.0), new THREE.Vector3(-10, 0.1, 6.7),
-      new THREE.Vector3(-15, 0.1, 6.7), new THREE.Vector3(-15, 0.1, 2.0),
+      new THREE.Vector3(-20, 0.1, 2.0), new THREE.Vector3(-12, 0.1, 2.0), new THREE.Vector3(-12, 0.1, 8.7),
+      new THREE.Vector3(-20, 0.1, 8.7), new THREE.Vector3(-20, 0.1, 2.0),
     ], true),
     new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-5.9, 0.1, -2.0), new THREE.Vector3(5.8, 0.1, -2.0), new THREE.Vector3(5.8, 0.1, -7.0),
-      new THREE.Vector3(-5.9, 0.1, -7.0), new THREE.Vector3(-5.9, 0.1, -2.0),
+      new THREE.Vector3(-7.9, 0.1, -2.0), new THREE.Vector3(7.8, 0.1, -2.0), new THREE.Vector3(7.8, 0.1, -8.2),
+      new THREE.Vector3(-7.9, 0.1, -8.2), new THREE.Vector3(-7.9, 0.1, -2.0),
     ], true),
     new THREE.CatmullRomCurve3([
-      new THREE.Vector3(10.2, 0.1, 2.0), new THREE.Vector3(17.5, 0.1, 2.0), new THREE.Vector3(17.5, 0.1, 7.6),
-      new THREE.Vector3(10.2, 0.1, 7.6), new THREE.Vector3(10.2, 0.1, 2.0),
+      new THREE.Vector3(12.2, 0.1, 2.0), new THREE.Vector3(22.5, 0.1, 2.0), new THREE.Vector3(22.5, 0.1, 8.6),
+      new THREE.Vector3(12.2, 0.1, 8.6), new THREE.Vector3(12.2, 0.1, 2.0),
     ], true),
   ]
-  for (let i = 0; i < 36; i += 1) {
+  for (let i = 0; i < 48; i += 1) {
     const rig = createPedestrian(i)
     scene.add(rig.root)
     walkers.push({ rig, curve: walkingLoops[i % walkingLoops.length], t: (i * 0.127) % 1, speed: 0.008 + (i % 4) * 0.001, elapsed: i * 0.13 })
@@ -212,7 +218,7 @@ export function createWorld(): WorldHandle {
     carriage.position.x = -i * 1.68
     train.add(carriage)
   }
-  train.position.set(-21, 0.05, -14.2)
+  train.position.set(-27, 0.05, -18.4)
   scene.add(train)
   let trainT = 0
   let trainDirection = 1
@@ -220,13 +226,13 @@ export function createWorld(): WorldHandle {
   const hemisphere = new THREE.HemisphereLight(0xbfc8c8, 0x283129, 1.45)
   scene.add(hemisphere)
   const sun = new THREE.DirectionalLight(0xd9ddd6, 2.1)
-  sun.position.set(-20, 34, -12)
+  sun.position.set(-25, 38, -15)
   sun.castShadow = true
   sun.shadow.mapSize.set(1536, 1536)
-  sun.shadow.camera.left = -34
-  sun.shadow.camera.right = 34
-  sun.shadow.camera.top = 34
-  sun.shadow.camera.bottom = -34
+  sun.shadow.camera.left = -46
+  sun.shadow.camera.right = 46
+  sun.shadow.camera.top = 46
+  sun.shadow.camera.bottom = -46
   sun.shadow.bias = -0.00035
   sun.shadow.normalBias = 0.015
   scene.add(sun)
@@ -268,7 +274,7 @@ export function createWorld(): WorldHandle {
     const sky = night ? 0x0f151c : twilight ? 0x5d6667 : 0x87918d
     scene.background = new THREE.Color(sky)
     ;(scene.fog as THREE.FogExp2).color.setHex(sky)
-    ;(scene.fog as THREE.FogExp2).density = night ? 0.012 : 0.0095
+    ;(scene.fog as THREE.FogExp2).density = night ? 0.0105 : 0.0079
     waterMat.color.setHex(night ? 0x17272e : 0x2c4247)
 
     const lightChance = night ? 0.62 : twilight ? 0.22 : 0.035
@@ -312,7 +318,7 @@ export function createWorld(): WorldHandle {
     updateAppearance(state)
     const running = state.speed === 0 ? 0 : 1
     const trafficMultiplier = (0.36 + state.employment / 120 + state.prosperity / 180) * running
-    const visibleVehicles = Math.round(7 + state.prosperity * 0.18 + state.employment * 0.10)
+    const visibleVehicles = Math.round(10 + state.prosperity * 0.2 + state.employment * 0.11)
 
     cars.forEach((car, i) => {
       car.t = (car.t + dt * car.speed * trafficMultiplier) % 1
@@ -325,7 +331,7 @@ export function createWorld(): WorldHandle {
     })
 
     const walkerMultiplier = (0.22 + state.employment / 110 + state.prosperity / 210) * running
-    const visibleWalkers = Math.round(6 + state.prosperity * 0.18 + state.employment * 0.11)
+    const visibleWalkers = Math.round(9 + state.prosperity * 0.2 + state.employment * 0.12)
     walkers.forEach((walker, i) => {
       walker.t = (walker.t + dt * walker.speed * walkerMultiplier) % 1
       walker.elapsed += dt * Math.max(0.25, walkerMultiplier)
@@ -356,7 +362,7 @@ export function createWorld(): WorldHandle {
       if (trainT >= 1) { trainT = 1; trainDirection = -1 }
       if (trainT <= 0) { trainT = 0; trainDirection = 1 }
     }
-    train.position.x = THREE.MathUtils.lerp(-20.5, 20.5, trainT)
+    train.position.x = THREE.MathUtils.lerp(-27, 27, trainT)
     train.rotation.y = trainDirection > 0 ? 0 : Math.PI
     train.visible = state.infrastructure > 22
 

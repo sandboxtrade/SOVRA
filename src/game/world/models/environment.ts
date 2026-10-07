@@ -3,8 +3,8 @@ import { box, cylinder, material, seeded, texturedMaterial } from '../visual'
 
 export function addGround(scene: THREE.Scene) {
   const points = [
-    [-24, -7], [-20, -16], [-10, -20], [2, -19], [13, -17], [22, -11], [25, -2],
-    [22, 8], [16, 17], [5, 20], [-6, 19], [-16, 16], [-23, 8], [-26, 1],
+    [-31, -8], [-27, -19], [-14, -24], [2, -23], [17, -20], [28, -13], [31, -2],
+    [29, 10], [21, 21], [7, 24], [-8, 23], [-21, 19], [-29, 10], [-33, 1],
   ]
   const shape = new THREE.Shape(points.map(([x, z]) => new THREE.Vector2(x, z)))
 
@@ -30,7 +30,7 @@ export function addGround(scene: THREE.Scene) {
   scene.add(land)
 
   const waterMat = new THREE.MeshStandardMaterial({ color: 0x26383e, roughness: 0.58, metalness: 0.08, flatShading: true })
-  const water = box(74, 0.16, 62, waterMat)
+  const water = box(92, 0.16, 76, waterMat)
   water.position.y = -0.66
   water.receiveShadow = true
   scene.add(water)

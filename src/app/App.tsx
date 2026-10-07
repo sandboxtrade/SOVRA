@@ -49,6 +49,13 @@ export default function App() {
   const nationalMood = conditionText(country.prosperity, 'стагнация', 'стабилизация', 'рост')
   const crisis = country.politics.stability < 35 || country.approval < 35
   const togglePanel = (next: Exclude<Panel, null>) => setPanel((current) => current === next ? null : next)
+  const overviewText = crisis
+    ? 'давление на власть растёт, нужен быстрый ответ'
+    : country.infrastructure < 40
+      ? 'идёт тяжёлая перестройка страны'
+      : country.prosperity > 50
+        ? 'ощущается оживление и восстановление'
+        : 'страна выходит из затяжной стагнации'
 
   const applyAction = (action: GameActionRequest) => setCountry((state) => {
     const next = dispatchGameAction(state, action).state
@@ -72,7 +79,7 @@ export default function App() {
       <header className="command-header glass-panel">
         <div className="state-mark" aria-hidden="true"><span>S</span></div>
         <div className="state-title">
-          <div className="eyebrow">SOVRA · v0.5.0</div>
+          <div className="eyebrow">SOVRA · v0.6.0</div>
           <div className="country-name">Республика Северная</div>
         </div>
         <div className="date-card">
@@ -93,12 +100,30 @@ export default function App() {
         <span>{crisis ? 'напряжённая обстановка' : nationalMood}</span>
       </div>
 
-      <div className="map-hint glass-panel">перетаскивай · щипок — масштаб</div>
+      <section className="focus-card glass-panel" aria-label="Краткий обзор страны">
+        <div className="focus-head">
+          <div>
+            <span>Краткий обзор</span>
+            <strong>{overviewText}</strong>
+          </div>
+          <em>{country.gdp.toFixed(1)} ВВП</em>
+        </div>
+        <div className="focus-grid">
+          <div><small>Население</small><b>{(country.population / 1_000_000).toFixed(2)} млн</b></div>
+          <div><small>Инфраструктура</small><b>{Math.round(country.infrastructure)}%</b></div>
+          <div><small>Экология</small><b>{Math.round(country.ecology)}%</b></div>
+        </div>
+      </section>
+
+      <div className="map-hint glass-panel">перемещай карту · щипок — масштаб</div>
 
       <div className="speed-control glass-panel" aria-label="Скорость времени">
-        <button className={country.speed === 0 ? 'active' : ''} onClick={() => setSpeed(0)} aria-label="Пауза"><span>Ⅱ</span></button>
-        <button className={country.speed === 1 ? 'active' : ''} onClick={() => setSpeed(1)} aria-label="Обычная скорость"><span>1×</span></button>
-        <button className={country.speed === 4 ? 'active' : ''} onClick={() => setSpeed(4)} aria-label="Ускорить"><span>4×</span></button>
+        <small>Время</small>
+        <div className="speed-buttons">
+          <button className={country.speed === 0 ? 'active' : ''} onClick={() => setSpeed(0)} aria-label="Пауза"><span>Ⅱ</span></button>
+          <button className={country.speed === 1 ? 'active' : ''} onClick={() => setSpeed(1)} aria-label="Обычная скорость"><span>1×</span></button>
+          <button className={country.speed === 4 ? 'active' : ''} onClick={() => setSpeed(4)} aria-label="Ускорить"><span>4×</span></button>
+        </div>
       </div>
 
       {panel === 'country' && <CountryPanel country={country} onClose={() => setPanel(null)} />}

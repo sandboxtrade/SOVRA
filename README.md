@@ -1,8 +1,8 @@
-# SOVRA v0.5.0
+# SOVRA v0.6.0
 
 Mobile-first political/economic sandbox with a living miniature 3D country. Simulation, AI control and presentation remain separate systems so new mechanics can be added without rebuilding the project around them.
 
-## v0.5.0 — visual overhaul
+## v0.6.0 — visual overhaul
 
 This release intentionally prioritizes presentation over new mechanics.
 
