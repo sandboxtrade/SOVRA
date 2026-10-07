@@ -1,0 +1,10 @@
+{
+  "name": "sovra-ai",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "vars": {
+    "OPENAI_MODEL": "gpt-6-luna",
+    "OPENAI_SERVICE_TIER": "flex",
+    "OPENAI_ALLOW_STANDARD_FALLBACK": "false"
+  }
+}
